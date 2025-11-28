@@ -1,23 +1,32 @@
 // FinalProject.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 #include <iostream>
-#include "Date.h";
+#include "Date.h"
 #include "Event.h"
+#include "User.h"
 int main() {
-    std::string description = "birthday party";
+
+    User user;
+    string userResponse;
+    while (!user.checkForLoggedIn()) { // loops until user creates account or logs in.
+        cout << "If you are a new user please type \"new\". If not please type \"login\" " <<endl;
+        cin >> userResponse;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        ;
+        while (userResponse !="new" && userResponse != "login") { // validating response.
+            cin.clear();
+            cout << "Error: input was invalid, please make sure to not have caps lock on." << endl;
+            cin >> userResponse;
+            
+
+        }
+        //create or login logic.
+    }
+    string description = "birthday party";
     Event myEvent;
     myEvent.createEvent(description, 11, 25, 2025);
     myEvent.print();
     return 0;
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

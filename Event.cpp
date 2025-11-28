@@ -7,6 +7,9 @@ void Event::createEvent(string description, int month, int day, int year) {
 }
 
 void Event::print() {
-    std::cout << this->description << " is on " << this->date.getMonth() << "/" << this->date.getDay() << "/" << this->date.getYear();
+    std::cout << this->description << " is on " 
+              << this->date.getMonth() << "/"
+              << this->date.getDay()
+              << "/" << this->date.getYear();
 }
 //Event::Event(){}
