@@ -13,6 +13,7 @@ class User {
 		string password;
 		string fileName = "userTable.txt";
 		bool isLoggedin = 0;
+		
 	public:
 		bool checkForUser(const string& username, const string& password);
 		void setUsername(const string& username);
@@ -21,8 +22,10 @@ class User {
 		void changePassword(const string& oldPassword, const string& newPassword);
 		bool checkForLoggedIn();
 		void addUserToTable(const User& user);
+		void createUserDatabase(const string& username);
 		void login(const string& username, const string& password);
+		static int USER_ID;
 };
-static int USER_ID = 0;
+
 
 #endif
