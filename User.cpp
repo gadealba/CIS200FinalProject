@@ -28,7 +28,8 @@ bool User::checkForUser(const string& username, const string& password) {
 			if (username == getUsername && password == getPassword) {
 				login(getUsername, getPassword);
 
-				//save the username for the correct file.
+				fileEvents = username + ".txt"; // file used to grab the events saved.
+				cout << "this is fileEvents file name " << fileEvents << endl;
 				return true;
 			}
 		}
@@ -67,6 +68,7 @@ void User::login(const string& username, const string& password) {
 	this->isLoggedin = true;
 	this->username = username;
 	this->password = password;
+	//have logic for adding saved data to the Event list.
 }
 void User::createUserDatabase(const string& username) { // for saving Events
 	string fileName = username +".txt";
@@ -75,4 +77,9 @@ void User::createUserDatabase(const string& username) { // for saving Events
 		cout << "Error:File unavailable." << endl;
 	}
 	reader.close();
+}
+void User::addEvent(const string& description, const int& month, const int& day, const int& year) {
+	event.createEvent(description, month, day, year);
+	events.push_back(event);
+	events.at(0).print();
 }
