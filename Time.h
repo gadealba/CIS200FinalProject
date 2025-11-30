@@ -4,9 +4,11 @@
 
 class Time {
 private:
-    int hour = 0, minute = 0;
+    int hour = 0, mins = 0;
 
 public:
-    void setTime(int hour, int minute);
+    void setTime(const int& hour, const int& mins);
+    int getHour();
+    int getMins();
 };
 #endif 

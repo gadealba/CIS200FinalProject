@@ -13,9 +13,13 @@ private:
     Date date;
     Time time;
 public:
-    //Event();
-    void createEvent(string description, int month, int day, int year);
+    void createEvent(string& description, int& month, int& day, int& year);
+    void createEvent(string& description, int& month, int& day, int& year, int& hour, int& mins);
     void print();
+    string getDescription();
+    Date getDate();
+    Time getTime();
+
 
 
 
