@@ -58,6 +58,9 @@ int main() {
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         if (userResponse == "event") {
             addEventDetails(description,month,day,year,hour,mins);
+            if (description == "" || month == 0 || day == 0 || year == 0) {
+                continue;
+            }
             if (hour == 0 && mins == 0) {
                 currentUser.createEvent(description, month, day, year);
             }
@@ -94,13 +97,16 @@ void setUpInfo(string& userResponse, string& string) { // creates new user.
     }
 }
 void addEventDetails(string& description, int& month, int& day, int& year, int& hours, int& mins) {
+    description = ""; month = 0; day = 0; year = 0;//resets the data.
+
     string userResponse;
     cout << "Please submit a description for the event." << endl;
     getline(cin, description);
     while (true) {
-        cout << "would you like to save the description?[yes]/[no]" << endl;
+        cout << "would you like to save the description?[yes]/[no]/[quit]" << endl;
         cin >> userResponse;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            if (userResponse == "quit") { return;}
         if (userResponse == "yes") {
             break;
         }
@@ -109,7 +115,7 @@ void addEventDetails(string& description, int& month, int& day, int& year, int& 
             getline(cin, description);
             continue;
         }
-        else if (userResponse != "yes" && userResponse != "no") {
+        else if (userResponse != "yes" && userResponse != "no" && userResponse != "quit") {
             cout << "Please make sure you do not have caps lock on." << endl;
             continue;
         }
@@ -134,20 +140,20 @@ void addEventDetails(string& description, int& month, int& day, int& year, int& 
         break;
     }
         while (true) {
-            cout << "You have put " << month << "/" << day << "/" << year << "\n is this correct? [yes/[no]]" << endl;
+            cout << "You have put " << month << "/" << day << "/" << year << "\n is this correct? [yes]/[no]/[quit]" << endl;
             cin >> userResponse;
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            if (userResponse != "yes" && userResponse != "no") {
+            if (userResponse != "yes" && userResponse != "no" && userResponse != "quit") {
                 cout << "please make sure you dod not have caps lock on." << endl;
                 continue;
             }
+            if (userResponse == "quit") { month = 0; day = 0; year = 0; return; }
             if (userResponse == "yes") {
                 break;
             }
             cout << "please enter the month day and year of the event." << endl;
             cin >> month >> day >> year;
         }
-    //cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cout << " would you like to add a time?[yes]/[no]" << endl;
     cin >> userResponse;
     while (userResponse != "yes" && userResponse != "no") {
@@ -167,23 +173,19 @@ void addEventDetails(string& description, int& month, int& day, int& year, int& 
                 continue;
             }
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "you have selected " << hours << ":" << mins << ". Is this correct?[yes]/[no]" << endl;
+            cout << "you have selected " << hours << ":" << mins << ". Is this correct?[yes]/[no]/[quit]" << endl;
             cin >> userResponse;
-            while (userResponse != "yes" && userResponse != "no") {
+            while (userResponse != "yes" && userResponse != "no" && userResponse != "quit") {
                 cout << "Error: that input was invalid, please try again." << endl;
                 cin >> userResponse;
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
             }
+            if (userResponse == "quit") { month = 0; day = 0; year = 0; return; }
             if (userResponse == "no") {
                 cout << "please type the hour and mins seperated by the [enter] key" << endl;
                 continue;
             }
-            if (userResponse == "yes") { 
-                
-                break;
-            }
-            
-            
+            if (userResponse == "yes") {  break;}
         }
     }
     if (userResponse == "no") {
