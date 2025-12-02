@@ -1,75 +1,140 @@
 // FinalProject.cpp : This file contains the 'main' function. Program execution begins and ends there.
 
 #include <iostream>
+#include <cstdlib>  // For system()
+#include <iomanip>  // For setfill and setw
 #include "Date.h"
 #include "Event.h"
 #include "User.h"
 
-void setUpInfo(string& userResponse,string& string);
-void addEventDetails(string& description,int& month,int& day,int& year, int& hour, int& mins);
+void clearScreen();
+void setUpInfo(string& userResponse, string& string);
+void addEventDetails(string& description, int& month, int& day, int& year, int& hour, int& mins);
+
+// Cross-platform screen clearing function
+void clearScreen() {
+#ifdef _WIN32
+    system("cls");  // Windows
+#else
+    system("clear");  // Linux/Mac
+#endif
+}
 
 int main() {
     string description;
-    int month, day, year,hour = 0,mins = 0;
+    int month, day, year, hour = 0, mins = 0;
     User currentUser;
     string username;
     string password;
     string userResponse;
 
-    while (!currentUser.checkForLoggedIn()) { // loops until user creates account or logs in.
-        cout << "If you are a new user please type [new]. If not please type [login] " <<endl;
-        cin >> userResponse;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        while (userResponse !="new" && userResponse != "login") { // validating response.
-            cin.clear();
-            cout << "Error: input was invalid, please make sure to not have caps lock on." << endl;
-            cin >> userResponse;
-            
+    bool programRunning = true;
 
-        }
-        if (userResponse == "new") { // creates new user.
-            cout << " please set up your username." << endl;
-            setUpInfo(userResponse, username);
-            currentUser.setUsername(username);
-            cout << "Please set up your password." << endl;
-            setUpInfo(userResponse, password);
-            currentUser.setPassword(password); // maybe add some password requirements?
-            currentUser.addUserToTable(currentUser); // isLoggedin = true now.
-        }
-        else if (userResponse == "login") {
-            while (true) {
-                cout << "Please enter your username." << endl;
-                cin >> username;
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "Please enter your password." << endl;
-                cin >> password;
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                if (currentUser.checkForUser(username, password)) {
-                    break;
+    while (programRunning) {
+        while (!currentUser.checkForLoggedIn()) { // loops until user creates account or logs in.
+            clearScreen();
+            cout << "If you are a new user please type [new]. If not please type [login]. To exit type [quit]" << endl;
+            cin >> userResponse;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            if (userResponse == "quit") {
+                programRunning = false;
+                break; // Exit login loop
+            }
+
+            while (userResponse != "new" && userResponse != "login") { // validating response.
+                cin.clear();
+                cout << "Error: input was invalid, please make sure to not have caps lock on." << endl;
+                cin >> userResponse;
+
+
+            }
+            if (userResponse == "new") { // creates new user.
+                clearScreen();
+                cout << " please set up your username." << endl;
+                setUpInfo(userResponse, username);
+                currentUser.setUsername(username);
+                clearScreen();
+                cout << "Please set up your password." << endl;
+                setUpInfo(userResponse, password);
+                currentUser.setPassword(password); // maybe add some password requirements?
+                currentUser.addUserToTable(currentUser); // isLoggedin = true now.
+            }
+            else if (userResponse == "login") {
+                while (true) {
+                    clearScreen();
+                    cout << "Please enter your username (or type 'back' to return to main menu, 'quit' to exit):" << endl;
+                    cin >> username;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    if (username == "back") {
+                        break; // Go back to login/new user screen
+                    }
+                    if (username == "quit") {
+                        programRunning = false;
+                        break; // Exit program
+                    }
+
+                    cout << "Please enter your password (or type 'back' to return, 'quit' to exit):" << endl;
+                    cin >> password;
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                    if (password == "back") {
+                        continue; // Go back to username prompt
+                    }
+                    if (password == "quit") {
+                        programRunning = false;
+                        break; // Exit program
+                    }
+
+                    if (currentUser.checkForUser(username, password)) {
+                        break;
+                    }
+                    else {
+                        cout << "\nLogin failed. Incorrect username or password." << endl;
+                        cout << "Press Enter to try again...";
+                        cin.get();
+                    }
                 }
             }
-        }   
-    }
-    while (userResponse != "quit") {
-        cout << "please one of the following:\n[event] adds an event to your account." <<
-            "\n[view] shows all the events related to this account." <<
-            "\n[quit] to quit the program.";
-        cin >> userResponse;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        if (userResponse == "event") {
-            addEventDetails(description,month,day,year,hour,mins);
-            if (description == "" || month == 0 || day == 0 || year == 0) {
-                continue;
+        }
+        while (userResponse != "quit") {
+            clearScreen();
+            cout << "Please one of the following options:\n[event] adds an event to your account." <<
+                "\n[view] shows all the events related to this account." <<
+                "\n[logout] to logout and return to login screen." <<
+                "\n[quit] to quit the program.";
+            cin >> userResponse;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            if (userResponse == "event") {
+                clearScreen();
+                addEventDetails(description, month, day, year, hour, mins);
+                if (description == "" || month == 0 || day == 0 || year == 0) {
+                    continue;
+                }
+                if (hour == 0 && mins == 0) {
+                    currentUser.createEvent(description, month, day, year);
+                }
+                else if (hour > 0 || mins > 0) {
+                    currentUser.createEvent(description, month, day, year, hour, mins);
+                }
+                cout << "\nEvent created successfully! Press Enter to continue...";
+                cin.get();
             }
-            if (hour == 0 && mins == 0) {
-                currentUser.createEvent(description, month, day, year);
+            if (userResponse == "view") {
+                clearScreen();
+                currentUser.printAllEvents();
+                cout << "Press Enter to continue...";
+                cin.get();
             }
-            else if (hour > 0 || mins > 0) {
-                currentUser.createEvent(description, month, day, year, hour, mins);
+            if (userResponse == "logout") {
+                currentUser.logout();
+                break; // Exit inner loop to go back to login screen
             }
         }
-        if (userResponse == "view") {
-            currentUser.printAllEvents();
+
+        if (userResponse == "quit") {
+            programRunning = false; // Exit outer loop to quit program
         }
     }
     return 0;
@@ -93,7 +158,7 @@ void setUpInfo(string& userResponse, string& string) { // creates new user.
             cin >> string;
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
-        if (userResponse == "yes") { break;}// leaves loop and continues on.
+        if (userResponse == "yes") { break; }// leaves loop and continues on.
     }
 }
 void addEventDetails(string& description, int& month, int& day, int& year, int& hours, int& mins) {
@@ -103,10 +168,10 @@ void addEventDetails(string& description, int& month, int& day, int& year, int& 
     cout << "Please submit a description for the event." << endl;
     getline(cin, description);
     while (true) {
-        cout << "would you like to save the description?[yes]/[no]/[quit]" << endl;
+        cout << "Would you like to save the description?[yes]/[no]/[quit]" << endl;
         cin >> userResponse;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            if (userResponse == "quit") { return;}
+        if (userResponse == "quit") { return; }
         if (userResponse == "yes") {
             break;
         }
@@ -123,37 +188,48 @@ void addEventDetails(string& description, int& month, int& day, int& year, int& 
         cin >> description;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
-    cout << "please enter the month day and year of the event all seperated by the [enter] key." << endl;
+    cout << "Please enter the month, day, and year of the event, are all separated by the [enter] key between inputs. (Please note that these should be numerical inputs such as 12 instead of December)" << endl;
     while (true) {
         try {
             cin.exceptions(ios::failbit);
             cin >> month >> day >> year;
         }
         catch (const ios_base::failure& e) {
-            std::cerr << "Caught exception: " << e.what() << "Please seperate the month day and year by the [enter] key. " << "\n";
+            std::cerr << "Caught exception: " << e.what() << "Please separate the month, day, and year, by the [enter] key between numerical inputs. " << "\n";
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "please enter the month day and year of the event." << endl;
+            cout << "Please enter the month, day, and year of the event, as numerical inputs only." << endl;
             continue;
         }
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         break;
     }
-        while (true) {
-            cout << "You have put " << month << "/" << day << "/" << year << "\n is this correct? [yes]/[no]/[quit]" << endl;
-            cin >> userResponse;
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            if (userResponse != "yes" && userResponse != "no" && userResponse != "quit") {
-                cout << "please make sure you dod not have caps lock on." << endl;
-                continue;
-            }
-            if (userResponse == "quit") { month = 0; day = 0; year = 0; return; }
-            if (userResponse == "yes") {
-                break;
-            }
-            cout << "please enter the month day and year of the event." << endl;
-            cin >> month >> day >> year;
+    while (true) {
+        cout << "You have put " << month << "/" << day << "/" << year << "\n is this correct? [yes]/[no]/[quit]" << endl;
+        cin >> userResponse;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        if (userResponse != "yes" && userResponse != "no" && userResponse != "quit") {
+            cout << "Please make sure you dod not have caps lock on." << endl;
+            continue;
         }
+        if (userResponse == "quit") { month = 0; day = 0; year = 0; return; }
+        if (userResponse == "yes") {
+            break;
+        }
+        clearScreen();
+        cout << "Please enter the month, day, and year of the event, as numerical inputs only." << endl;
+        try {
+            cin.exceptions(ios::failbit);
+            cin >> month >> day >> year;
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        catch (const ios_base::failure& e) {
+            std::cerr << "Caught exception: " << e.what() << " Please enter numeric values only." << "\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            continue;
+        }
+    }
     cout << " would you like to add a time?[yes]/[no]" << endl;
     cin >> userResponse;
     while (userResponse != "yes" && userResponse != "no") {
@@ -162,18 +238,18 @@ void addEventDetails(string& description, int& month, int& day, int& year, int& 
         cin >> userResponse;
     }
     if (userResponse == "yes") {
-        cout << "please type the hour and mins seperated by the [enter] key" << endl;
+        cout << "please type the hour and mins separated by the [enter] key between inputs" << endl;
         while (true) {
-            try { cin >> hours >> mins;}
+            try { cin >> hours >> mins; }
             catch (const ios_base::failure& e) {
-                std::cerr << "Caught exception: " << e.what() << "Please seperate the hour and minute by the [enter] key. " << "\n";
+                std::cerr << "Caught exception: " << e.what() << "Please separate the hour and minute by the [enter] key between inputs." << "\n";
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "please type the hour and mins seperated by the [enter] key" << endl;
+                cout << "please type the hour and mins separated by the [enter] key between inputs." << endl;
                 continue;
             }
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "you have selected " << hours << ":" << mins << ". Is this correct?[yes]/[no]/[quit]" << endl;
+            cout << "you have selected " << hours << ":" << setfill('0') << setw(2) << mins << ". Is this correct?[yes]/[no]/[quit]" << endl;
             cin >> userResponse;
             while (userResponse != "yes" && userResponse != "no" && userResponse != "quit") {
                 cout << "Error: that input was invalid, please try again." << endl;
@@ -182,14 +258,14 @@ void addEventDetails(string& description, int& month, int& day, int& year, int& 
             }
             if (userResponse == "quit") { month = 0; day = 0; year = 0; return; }
             if (userResponse == "no") {
-                cout << "please type the hour and mins seperated by the [enter] key" << endl;
+                clearScreen();
+                cout << "please type the hour and mins separated by the [enter] key" << endl;
                 continue;
             }
-            if (userResponse == "yes") {  break;}
+            if (userResponse == "yes") { break; }
         }
     }
     if (userResponse == "no") {
         return;
     }
 }
-

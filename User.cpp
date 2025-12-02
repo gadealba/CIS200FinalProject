@@ -1,5 +1,5 @@
 #include "User.h"
-int User::USER_ID = []{
+int User::USER_ID = [] {
 	ifstream reader("userTable.txt");
 	string input;
 	int temp = 0;
@@ -10,10 +10,9 @@ int User::USER_ID = []{
 			temp = stoi(getId);
 		}
 	}
-		cout << "THIS IS THE USER_ID" << temp << endl;
-		reader.close();
-		return temp;
-}();
+	reader.close();
+	return temp;
+	}();
 
 bool User::checkForUser(const string& username, const string& password) {
 	ifstream reader(this->fileName);
@@ -30,12 +29,11 @@ bool User::checkForUser(const string& username, const string& password) {
 				login(getUsername, getPassword);
 
 				fileEvents = username + ".txt"; // file used to grab the events saved.
-				cout << "this is fileEvents file name " << fileEvents << endl;
 				reader.close();
 				return true;
 			}
 		}
-		
+
 	}
 	cout << "did not successfully login." << endl;
 	reader.close();
@@ -56,8 +54,8 @@ void User::setPassword(const string& password) {
 bool User::checkForLoggedIn() {
 	return this->isLoggedin;
 }
-void User::addUserToTable(const User &user) { 
-	ofstream reader(this->fileName,ios::app);
+void User::addUserToTable(const User& user) {
+	ofstream reader(this->fileName, ios::app);
 	if (!reader) {
 		cout << "Error: File unavailable for reading." << endl;
 		return;
@@ -74,6 +72,13 @@ void User::login(const string& username, const string& password) {
 	this->fileEvents = username + ".txt";
 	getSavedEvents();
 }
+void User::logout() {
+	this->isLoggedin = false;
+	this->username = "";
+	this->password = "";
+	this->fileEvents = "";
+	this->events.clear();
+}
 void User::createUserDatabase(const string& username) { // for saving Events
 	fileEvents = username + ".txt";
 	ofstream reader(fileEvents);
@@ -82,18 +87,18 @@ void User::createUserDatabase(const string& username) { // for saving Events
 	}
 	reader.close();
 }
-void User::createEvent(string& description,  int& month,  int& day,  int& year) {
+void User::createEvent(string& description, int& month, int& day, int& year) {
 	event.createEvent(description, month, day, year);
 	addEventToTable(event);
 	events.push_back(event);
 }
 void User::createEvent(string& description, int& month, int& day, int& year, int& hour, int& mins) {
-	event.createEvent(description, month, day, year,hour,mins);
+	event.createEvent(description, month, day, year, hour, mins);
 	addEventToTable(event);
 	events.push_back(event);
 }
-void User::addEventToTable( Event& event) {
-	ofstream reader(this->fileEvents,ios::app); // allows overwriting.
+void User::addEventToTable(Event& event) {
+	ofstream reader(this->fileEvents, ios::app); // allows overwriting.
 	if (!reader) {
 		cout << "Error: File is unavailable." << endl;
 		return;
@@ -121,11 +126,11 @@ void User::getSavedEvents() {
 		return;
 	}
 	Event newEvent;
-	int month,day,year,hour,mins;
-	string description,fileMonth,fileDay,fileYear,fileHour,fileMins;
+	int month, day, year, hour, mins;
+	string description, fileMonth, fileDay, fileYear, fileHour, fileMins;
 	while (getline(reader, inputFromFile)) { // for now the time does nothing.
 		stringstream substring(inputFromFile);
-		if (getline(substring, description, ':') && getline(substring, fileMonth, ':') && 
+		if (getline(substring, description, ':') && getline(substring, fileMonth, ':') &&
 			getline(substring, fileDay, ':') && getline(substring, fileYear, ':') &&
 			getline(substring, fileHour, ':') && getline(substring, fileMins, ':')) {
 			month = stoi(fileMonth);
@@ -140,9 +145,8 @@ void User::getSavedEvents() {
 			else if (hour > 0 || mins > 0) {
 				newEvent.createEvent(description, month, day, year, hour, mins);
 				events.push_back(newEvent);
-			}		
+			}
 		}
 	}
-		
-}
 
+}

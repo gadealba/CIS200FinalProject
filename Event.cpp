@@ -1,10 +1,11 @@
 #include "Event.h"
 #include "Date.h"
+#include <iomanip>
 
 void Event::createEvent(string& description, int& month, int& day, int& year) {
     this->description = description;
     this->date.setDate(month, day, year);
-    this->time.setTime(0,0);
+    this->time.setTime(0, 0);
 }
 void Event::createEvent(string& description, int& month, int& day, int& year, int& hour, int& mins) {
     this->description = description;
@@ -23,8 +24,9 @@ void Event::print() {
     std::cout << this->description << " is on "
         << this->date.getMonth() << "/"
         << this->date.getDay()
-        << "/" << this->date.getYear() << " at " << this->time.getHour() << ":" << this->time.getMins() <<"." << endl;
-    
+        << "/" << this->date.getYear() << " at " << this->time.getHour() << ":"
+        << std::setfill('0') << std::setw(2) << this->time.getMins() << "." << endl;
+
 }
 string Event::getDescription() {
     return this->description;
